@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="UTF-8">
+<title>Insert title here</title>
+
+<link href="css/bootstrap.min.css" rel="StyleSheet" type="text/css">
+
+<script src="js/jquery.min.js"></script>
+<script src="js/jquery.form.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/or4.js"></script>
+</head>
+<body>
+	<form id="uploadForm" action="rest/interface/upload"
+		method="post" enctype="multipart/form-data">
+
+		<ul class="list-group" id="ifcList">
+		</ul>
+
+		<div class="col-lg-6 col-sm-6 col-12">
+	        <div class="input-group">
+	            <label class="input-group-btn">
+	                <span class="btn btn-primary">
+	                    Browse&hellip; <input type="file" name="file" style="display: none;">
+	                </span>
+	            </label>
+	            <input type="text" class="form-control" readonly>
+	        </div>
+			<div class="input-group">
+				<input class="btn btn-primary" type="submit" value="Загрузить" />
+			</div>
+        </div>
+        
+	</form>
+
+	<!-- Error dialog -->
+	<div id="errorDlg" class="modal fade" role="dialog">
+		<div class="modal-dialog modal-lg">
+			<div class="modal-content">
+				<div class="modal-header">
+					<button type="button" class="close" data-dismiss="modal">&times;</button>
+					<h4 class="modal-title"></h4>
+				</div>
+				<div class="modal-body pre-scrollable">
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-default" data-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
+</body>
+
+<script type="text/javascript">
+
+$(document).on('change', ':file', function() {
+	var input = $(this),
+	numFiles = input.get(0).files ? input.get(0).files.length : 1,
+	label = input.val().replace(/\\/g, '/').replace(/.*\//, '');
+    input.trigger('fileselect', [numFiles, label]);
+  });
+
+$(document).ready( function() {
+	
+	$('#uploadForm').ajaxForm({
+        url : 'rest/interface/upload',
+        success : function (response) {
+	        showError(response);
+	    	reload();
+        },
+	    error : function (response) {
+	        showAjaxError(response);
+	    }
+    });
+
+	$(':file').on('fileselect', function(event, numFiles, label) {
+
+        var input = $(this).parents('.input-group').find(':text'),
+        log = numFiles > 1 ? numFiles + ' files selected' : label;
+
+        if( input.length ) {
+            input.val(log);
+        } else {
+            if( log ) alert(log);
+        }
+    });
+	
+	reload();
+});
+
+function reload() {
+	getAllInterfaces(function(interfaces) {
+		var jIfcList = $('#ifcList');
+		jIfcList.empty();
+		for (i in interfaces) {
+			var ifc = interfaces[i];
+			jItem = $('<li>', {
+				class: 'list-group-item'
+			});
+			jIfcList.append(jItem);
+			jItem.append($('<a>', {
+				name: 'Link',
+				href: 'main.html?ifcId=' + ifc.id,
+				text: ifc.title ? ifc.title : ifc.id
+			}))
+		}
+	});
+}
+</script>
+
+</html>

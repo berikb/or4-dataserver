@@ -1,0 +1,27 @@
+<html>
+
+<script src="js/jquery.min.js"></script>
+<script src="js/bootstrap.min.js"></script>
+<script src="js/d3.js"></script>
+<script src="js/or4.js"></script>
+
+<link href="css/bootstrap.min.css" rel="StyleSheet" type="text/css">
+<link href="css/or4.css" rel="StyleSheet" type="text/css">
+
+<style>
+</style>
+<body>
+</body>
+
+<script type="text/javascript">
+
+d3.csvParseRows("sitcenter.csv", function(error, data) {
+	if (error) throw error;
+	
+	d3.select("body").data(data, function(d) {
+		console.log(d);
+	});
+});
+
+</script>
+</html>
